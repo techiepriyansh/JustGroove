@@ -71,8 +71,8 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                         flex: 1,
                         child: MyBorderedContainer(
                           child: IconButton(
-                            onPressed: () {
-                                File chosenFile = FilePicker.getFile(allowedExtensions: ["mid"]);
+                            onPressed: () async {
+                                File chosenFile = await FilePicker.getFile(allowedExtensions: ["mid"]);
                                   
                                 setState(() {
                                   midiFile = chosenFile;
