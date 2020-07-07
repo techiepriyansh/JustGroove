@@ -155,7 +155,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                     color: musicInProgress ? MyColors.light : MyColors.dark,
                                     onPressed: () {
                                       bool toPlay = !musicInProgress;
-                                      if(toPlay) startPlayingMusic();
+                                      if(toPlay) startPlayingMusic(el[1]);
                                       else stopPlayingMusic();
 
                                       setState(() {
@@ -200,10 +200,10 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
     );
   }
 
-  Future<void> startPlayingMusic() async {
+  Future<void> startPlayingMusic(int selectedTrackNumber) async {
     await MidiProvider.startMidi();
 
-    List<MidiStroke> midiStrokes = mp.getStrokes();
+    List<MidiStroke> midiStrokes = mp.getStrokes(selectedTrackNumber);
 
     for(MidiStroke stroke in midiStrokes){
       if(stroke.notes.length != 0) {
@@ -212,7 +212,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
         }
       }
 
-      await Future.delayed(Duration(milliseconds: stroke.duration), () => "Played!");
+      await Future.delayed(Duration(milliseconds: stroke.duration.round()), () => "Played!");
 
       if(stroke.notes.length != 0) {
         for(int mNote in stroke.notes) {
