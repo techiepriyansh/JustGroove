@@ -3,9 +3,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:dart_midi/dart_midi.dart';
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:justgroove/my_containers.dart';
-import 'packages:justgroove/midi_processor.dart'
+import 'package:justgroove/midi_processor.dart';
+import 'package:justgroove/midi_provider.dart';
 
 import 'package:justgroove/my_colors.dart';
 
