@@ -186,7 +186,9 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                     onPressed: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) => Playground(mp.getStrokes(el.trackIndex))),
+                                        MaterialPageRoute(builder: (context) => Playground(mp.getStrokes(el.trackIndex)
+                                          .where((theStroke) => theStroke.notes.length != 0)
+                                          .toList())),
                                       );                                      
                                     },
                                   ),
