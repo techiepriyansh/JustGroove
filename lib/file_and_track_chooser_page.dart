@@ -20,7 +20,7 @@ class FileAndTrackChooserPage extends StatefulWidget {
 class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
   File midiFile;
   String fileStatus;
-  List<List<dynamic>> trackNamesAndIndices;
+  List<List<dynamic>> trackNamesAndIndices = [];
   MidiProcessor mp;
 
   bool musicInProgress = false;
@@ -73,23 +73,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                         flex: 1,
                         child: MyBorderedContainer(
                           child: IconButton(
-                            onPressed: () async {
-                                File chosenFile = await FilePicker.getFile(allowedExtensions: ["mid"]);
-                                  
-                                setState(() {
-                                  midiFile = chosenFile;
-                                  mp = MidiProcessor(chosenFile.path);
-
-                                  List<String> allTrackNames = mp.getTrackNames();
-                                  trackNamesAndIndices = [];
-                                  for(int i = 0; i < allTrackNames.length; i++ ){
-                                    String currTrackName = allTrackNames[i];
-                                    if(!(currTrackName.startsWith("Untitled")))
-                                      trackNamesAndIndices.add([currTrackName, i]);
-                                  }
-
-                                });
-                            },
+                            onPressed: startFileSelection(),
                             icon: Icon(Icons.folder_open),
                           ),
                         ),
@@ -198,6 +182,24 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
         ),
       ),
     );
+  }
+
+  Future<void> startFileSelection() async {
+    File chosenFile = await FilePicker.getFile(allowedExtensions: ["mid"]);
+      
+    setState(() {
+      midiFile = chosenFile;
+      mp = MidiProcessor(chosenFile.path);
+
+      List<String> allTrackNames = mp.getTrackNames();
+      trackNamesAndIndices = [];
+      for(int i = 0; i < allTrackNames.length; i++ ){
+        String currTrackName = allTrackNames[i];
+        if(!(currTrackName.startsWith("Untitled")))
+          trackNamesAndIndices.add([currTrackName, i]);
+      }
+
+    });
   }
 
   Future<void> startPlayingMusic(int selectedTrackNumber) async {
