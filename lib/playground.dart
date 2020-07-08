@@ -97,7 +97,7 @@ class PlaygroundState extends State<Playground> {
       }
     }
 
-    int conterToSet = counter + 1;
+    int counterToSet = counter + 1;
     if (counterToSet >= widget.strokes.length) counterToSet = 0;
 
     setState() {
