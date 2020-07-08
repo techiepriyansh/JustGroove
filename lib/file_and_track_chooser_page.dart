@@ -6,6 +6,8 @@ import 'package:dart_midi/dart_midi.dart';
 import 'dart:async';
 import 'dart:io';
 
+import 'package:playground.dart';
+
 import 'package:justgroove/my_containers.dart';
 import 'package:justgroove/midi_processor.dart';
 import 'package:justgroove/midi_provider.dart';
@@ -181,7 +183,12 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                   padding: EdgeInsets.all(4),
                                   child: IconButton(
                                     icon: Icon(Icons.play_arrow),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => Playground(mp.getStrokes(el.trackIndex))),
+                                      );                                      
+                                    },
                                   ),
                                 ),
                               ),
