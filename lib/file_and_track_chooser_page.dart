@@ -73,7 +73,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                         flex: 1,
                         child: MyBorderedContainer(
                           child: IconButton(
-                            onPressed: startFileSelection(),
+                            onPressed: () => startFileSelection(),
                             icon: Icon(Icons.folder_open),
                           ),
                         ),
@@ -184,7 +184,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
     );
   }
 
-  void startFileSelection() async {
+  Future<void> startFileSelection() async {
     File chosenFile = await FilePicker.getFile(allowedExtensions: ["mid"]);
       
     setState(() {
