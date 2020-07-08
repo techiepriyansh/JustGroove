@@ -150,8 +150,8 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                     icon: Icon(Icons.headset),
                                     color: (musicInProgress && selectedTrackIndex == el.trackIndex) ? MyColors.light : MyColors.dark,
                                     onPressed: () {
-                                      bool toPlay = !musicInProgress;
-
+                                      //Play if the music is not playing or if it is playing but the track is different
+                                      bool toPlayThis = (musicInProgress && selectedTrackIndex != el.trackIndex) || (!musicInProgress) ;
                                       if(toPlay) {
                                         selectedTrackIndex = el.trackIndex;
                                         startPlayingMusic();
@@ -225,20 +225,32 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
 
     subscription = midiNotesSequencer().listen((MidiInfoForPlaying info) {
 
-      if (info.shouldPlay) {
-        if(info.notes.length != 0) {
-          for(int mNote in info.notes) {
-            MidiProvider.playMidiNote(mNote);
-          }
-        }      
-      }
-      else{
-        if(info.notes.length != 0) {
-          for(int mNote in info.notes) {
-            MidiProvider.stopMidiNote(mNote);
+      switch (info.message) {
+        case "Play Note": {
+          if(info.notes.length != 0) {
+            for(int mNote in info.notes) {
+              MidiProvider.playMidiNote(mNote);
+            }
+          }      
+        }
+        break;
+
+        case "Stop Note": {
+          if(info.notes.length != 0) {
+            for(int mNote in info.notes) {
+              MidiProvider.stopMidiNote(mNote);
+            }
           }
         }
+        break;
+
+        case "Stop Playing": {
+          setState(() {
+            musicInProgress = false;
+          });
+        }
       }
+      break;
     });
     
   }
@@ -253,22 +265,24 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
 
     for(MidiStroke stroke in midiStrokes){
       
-      yield MidiInfoForPlaying(true, stroke.notes);
+      yield MidiInfoForPlaying("Play Note", stroke.notes);
 
       await Future.delayed(Duration(milliseconds: stroke.duration.round()), () => "Played!");
 
-      yield MidiInfoForPlaying(false, stroke.notes);
+      yield MidiInfoForPlaying("Stop Note", stroke.notes);
 
     }
+
+    yield MidiInfoForPlaying("Stop Playing", []);
   }
 
 }
 
 
 class MidiInfoForPlaying {
-  bool shouldPlay;
+  String message;
   List<int> notes;
-  MidiInfoForPlaying(this.shouldPlay, this.notes);
+  MidiInfoForPlaying(this.message, this.notes);
 }
 
 class TrackNameAndIndex {
