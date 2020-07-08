@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:justgroove/my_home_page.dart';
-import 'package:justgroove/file_and_track_chooser_page.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FileAndTrackChooserPage(),
+      home: MyHomePage(),
     );
   }
 }
