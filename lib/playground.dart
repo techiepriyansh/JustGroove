@@ -82,9 +82,9 @@ class PlaygroundState extends State<Playground> {
       }
     }
 
-    setState() {
+    setState(() {
       isClicked = true;
-    }
+    });
   }
 
   void stopStroke() {
@@ -100,9 +100,9 @@ class PlaygroundState extends State<Playground> {
     int counterToSet = counter + 1;
     if (counterToSet >= widget.strokes.length) counterToSet = 0;
 
-    setState() {
+    setState(() {
       isClicked = false;
       counter = counterToSet;
-    }
+    });
   }
 }
