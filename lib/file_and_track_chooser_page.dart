@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dart_midi/dart_midi.dart';
 
@@ -18,12 +19,23 @@ class FileAndTrackChooserPage extends StatefulWidget {
 }
 
 class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
+
   File midiFile;
   String fileStatus;
-  List<List<dynamic>> trackNamesAndIndices = [];
+
+  List<TrackNameAndIndex> trackNamesAndIndices = [];
   MidiProcessor mp;
 
   bool musicInProgress = false;
+  int selectedTrackIndex;
+  StreamSubscription subscription;
+
+  @override
+  void initState() {
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    MidiProvider.startMidi();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +123,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                   padding: EdgeInsets.all(4),
                                   child: Center(
                                     child: Text(
-                                      el[0],
+                                      el.trackName,
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: MyColors.dark,
@@ -136,10 +148,14 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                   padding: EdgeInsets.all(4),
                                   child: IconButton(
                                     icon: Icon(Icons.headset),
-                                    color: musicInProgress ? MyColors.light : MyColors.dark,
+                                    color: (musicInProgress && selectedTrackIndex == el.trackIndex) ? MyColors.light : MyColors.dark,
                                     onPressed: () {
                                       bool toPlay = !musicInProgress;
-                                      if(toPlay) startPlayingMusic(el[1]);
+
+                                      if(toPlay) {
+                                        selectedTrackIndex = el.trackIndex;
+                                        startPlayingMusic();
+                                      }
                                       else stopPlayingMusic();
 
                                       setState(() {
@@ -192,42 +208,70 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
       mp = MidiProcessor(chosenFile.path);
 
       List<String> allTrackNames = mp.getTrackNames();
+
       trackNamesAndIndices = [];
       for(int i = 0; i < allTrackNames.length; i++ ){
         String currTrackName = allTrackNames[i];
         if(!(currTrackName.startsWith("Untitled")))
-          trackNamesAndIndices.add([currTrackName, i]);
+          trackNamesAndIndices.add(TrackNameAndIndex(currTrackName, i));
       }
 
     });
   }
 
-  Future<void> startPlayingMusic(int selectedTrackNumber) async {
-    await MidiProvider.startMidi();
+  void startPlayingMusic() {
 
-    List<MidiStroke> midiStrokes = mp.getStrokes(selectedTrackNumber);
+    subscription?.cancel();
 
-    for(MidiStroke stroke in midiStrokes){
-      if(stroke.notes.length != 0) {
-        for(int mNote in stroke.notes) {
-          MidiProvider.playMidiNote(mNote);
+    subscription = midiNotesSequencer().listen((MidiInfoForPlaying info) {
+
+      if (info.shouldPlay) {
+        if(info.notes.length != 0) {
+          for(int mNote in info.notes) {
+            MidiProvider.playMidiNote(mNote);
+          }
+        }      
+      }
+      else{
+        if(info.notes.length != 0) {
+          for(mNote in info.notes) {
+            MidiProvider.stopMidiNote(mNote);
+          }
         }
       }
+    });
+    
+  }
+
+  void stopPlayingMusic() {
+    subscription?.cancel();
+  }
+
+  Stream<MidiInfoForPlaying> midiNotesSequencer() async* {
+
+    List<MidiStroke> midiStrokes = mp.getStrokes(selectedTrackIndex);
+
+    for(MidiStroke stroke in midiStrokes){
+      
+      yield MidiInfoForPlaying(true, stroke.notes);
 
       await Future.delayed(Duration(milliseconds: stroke.duration.round()), () => "Played!");
 
-      if(stroke.notes.length != 0) {
-        for(int mNote in stroke.notes) {
-          MidiProvider.stopMidiNote(mNote);
-        }
-      }
+      yield MidiInfoForPlaying(false, stroke.notes);
 
-    }
-
-    MidiProvider.stopMidi();
   }
+}
 
-  Future<void> stopPlayingMusic() async {
-    await MidiProvider.stopMidi();
-  }
+
+class MidiInfoForPlaying {
+  bool shouldPlay;
+  List<int> notes;
+  MidiInfoForPlaying(this.shouldPlay, this.notes);
+}
+
+class TrackNameAndIndex {
+  String trackName;
+  int trackIndex;
+
+  TrackNameAndIndex(this.trackName, this.trackIndex);
 }
