@@ -212,7 +212,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
       trackNamesAndIndices = [];
       for(int i = 0; i < allTrackNames.length; i++ ){
         String currTrackName = allTrackNames[i];
-        if(!(currTrackName.startsWith("Untitled")))
+        if(!(currTrackName.startsWith("Untitled MIDI Track")) || currTrackName.trim() == "")
           trackNamesAndIndices.add(TrackNameAndIndex(currTrackName, i));
       }
 
