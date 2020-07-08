@@ -6,7 +6,7 @@ import 'package:dart_midi/dart_midi.dart';
 import 'dart:async';
 import 'dart:io';
 
-import 'package:playground.dart';
+import 'package:justgroove/playground.dart';
 
 import 'package:justgroove/my_containers.dart';
 import 'package:justgroove/midi_processor.dart';
