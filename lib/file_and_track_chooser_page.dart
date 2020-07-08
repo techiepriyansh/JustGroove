@@ -234,7 +234,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
       }
       else{
         if(info.notes.length != 0) {
-          for(mNote in info.notes) {
+          for(int mNote in info.notes) {
             MidiProvider.stopMidiNote(mNote);
           }
         }
@@ -259,7 +259,9 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
 
       yield MidiInfoForPlaying(false, stroke.notes);
 
+    }
   }
+
 }
 
 
