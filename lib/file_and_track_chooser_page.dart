@@ -184,7 +184,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
     );
   }
 
-  Future<void> startFileSelection() async {
+  void startFileSelection() async {
     File chosenFile = await FilePicker.getFile(allowedExtensions: ["mid"]);
       
     setState(() {
