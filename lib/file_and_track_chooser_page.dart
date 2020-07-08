@@ -152,14 +152,14 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
                                     onPressed: () {
                                       //Play if the music is not playing or if it is playing but the track is different
                                       bool toPlayThis = (musicInProgress && selectedTrackIndex != el.trackIndex) || (!musicInProgress) ;
-                                      if(toPlay) {
+                                      if(toPlayThis) {
                                         selectedTrackIndex = el.trackIndex;
                                         startPlayingMusic();
                                       }
                                       else stopPlayingMusic();
 
                                       setState(() {
-                                        musicInProgress = toPlay;
+                                        musicInProgress = toPlayThis;
                                       });
                                     },
                                   ),
@@ -249,8 +249,9 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
             musicInProgress = false;
           });
         }
+        break;
       }
-      break;
+
     });
     
   }
