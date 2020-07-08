@@ -185,10 +185,7 @@ class _FileAndTrackChooserPageState extends State<FileAndTrackChooserPage> {
   }
 
   Future<void> startFileSelection() async {
-    File chosenFile = await FilePicker.getFile(
-      type: FileType.custom,
-      allowedExtensions: ["mid"],
-      );
+    File chosenFile = await FilePicker.getFile();
       
     setState(() {
       midiFile = chosenFile;
