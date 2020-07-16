@@ -38,9 +38,9 @@ class MidiProcessor {
     return 60000000/mpb ;
   }
 
-  List<MidiStroke> getStrokes(int trackIndex)
+  List<MidiStroke> getStrokes(int trackIndex, {int algorithmIndex})
   {
-
+    if(algorithmIndex == null) algorithmIndex = AlgorithmIndices.KEEP_EXTENDED_NOTES;
     int tpb = parsedMidi.header.ticksPerBeat;
     int mpb = getMicrosecondsPerBeat(); 
 
@@ -116,7 +116,10 @@ class MidiProcessor {
         List<int> notesToAdd = [];
         notesToAdd.addAll(prev["noteOn"]);
         strokes.add(MidiStroke(notesToAdd,duration));
-        prev["noteOn"].removeWhere((el) => curr["noteOff"].contains(el));
+        if (algorithmIndex == AlgorithmIndices.KEEP_EXTENDED_NOTES)
+          prev["noteOn"].removeWhere((el) => curr["noteOff"].contains(el));
+        else if(algorithmIndex == AlgorithmIndices.CUT_EXTENDED_NOTES)
+          prev["noteOn"].removeWhere((el) => curr["noteOff"].contains(el) || prev["noteOn"].contains(el)); 
       }
       else
       {
@@ -178,3 +181,7 @@ class MidiStroke{
   String toString() => "${notes.toString()} : $duration";
 }
 
+class AlgorithmIndices{
+  static final int KEEP_EXTENDED_NOTES = 0;
+  static final int CUT_EXTENDED_NOTES = 1;
+}
